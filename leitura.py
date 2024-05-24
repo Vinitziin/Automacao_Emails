@@ -61,12 +61,12 @@ def tabela_img(tabela_html):
 
 def ask_question(email):
     prompt = f"""
-    Você é um assistente útil. Abaixo está o conteúdo de um e-mail que contém informações sobre um leilão. Extraia o prazo de envio do leilão a partir deste e-mail.
+    Você é um assistente útil. Abaixo está o conteúdo de um e-mail que contém informações sobre um leilão. Extraia o prazo de envio e validade envio do leilão a partir deste e-mail.
 
     E-mail:
     {email}
 
-    Por favor, forneça apenas o prazo de envio do leilão.
+    Por favor, forneça apenas o prazo de envio do leilão, e a validade de envio, e com isso peço que seja conciso ao foncer as informações, apenas datas e horarios.
     """
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -92,7 +92,7 @@ WebDriverWait(driver, 80).until(
 
 emails_notificados = set()
 novas_mensagens = set()
-tamanho_minimo = 100000
+tamanho_minimo = 120_000
 wait = WebDriverWait(driver, 60)
 #===================================Filtro de Leilões e lógica principal===================================
 def verificar_emails():
@@ -108,7 +108,7 @@ def verificar_emails():
         
         assunto_original = email.Subject
         assunto = assunto_original.upper() 
-        identificador_email = f"{assunto}-{email.ReceivedTime.strftime('%d/%m/%Y %H:%M:%S')}"
+        identificador_email = f"{assunto}"
 
         if identificador_email in emails_notificados:
             continue
@@ -125,17 +125,15 @@ def verificar_emails():
             
 
         if "CEMIG " in assunto:
-            for attachment in email.Attachments:
-                image_attachments = [attachment for attachment in email.Attachments if any(attachment.FileName.lower().endswith(ext) for ext in ['.png'])]
-                if attachment.Size > tamanho_minimo:
-                    if len(image_attachments) > 0:  
-                        selected_attachment = image_attachments[0]  
-                        save_path = os.path.join(os.getcwd(), 'pasta_img', selected_attachment.FileName)
-                        selected_attachment.SaveAsFile(save_path)
-                        mensagem = f"*Assunto*: {assunto_original}"
-                        novas_mensagens.add((mensagem, save_path))
-                        emails_notificados.add(identificador_email)           
-            continue
+                image_attachments = [attachment for attachment in email.Attachments if attachment.FileName.lower().endswith('.png') and attachment.Size > tamanho_minimo]
+                if image_attachments:
+                    selected_attachment = image_attachments[0]
+                    save_path = os.path.join(os.getcwd(), 'pasta_img', selected_attachment.FileName)
+                    selected_attachment.SaveAsFile(save_path)
+                    mensagem = f"*Assunto*: {assunto_original}"
+                    novas_mensagens.add((mensagem, save_path))
+                    emails_notificados.add(identificador_email)           
+                continue
 
 
         else:
@@ -157,7 +155,7 @@ def verificar_emails():
                     if tabela_html:
                         html_completo = ''.join([str(tabela) for tabela in tabela_html])  
                         imagem = tabela_img(html_completo) 
-                        mensagem = f"*Assunto*: {assunto_original}\n\n *Prazo de envio:* {ask_question(email.body)}"
+                        mensagem = f"*Assunto*: {assunto_original}\n\n {ask_question(email.body)}"
                         novas_mensagens.add((mensagem, imagem))
                         emails_notificados.add(identificador_email)                           
                     break         
