@@ -66,7 +66,7 @@ def ask_question(email):
     E-mail:
     {email}
 
-    Por favor, forneça apenas o prazo de envio do leilão, e a validade de envio, e com isso peço que seja conciso ao foncer as informações, apenas datas e horarios.
+    Por favor, forneça apenas o prazo de envio do leilão, e a validade de envio, e com isso peço que seja conciso ao foncer as informações, apenas datas e horarios, observação a validade pode aparecer dessa forma Data e horário limite para envio da Proposta por resposta
     """
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -92,7 +92,7 @@ WebDriverWait(driver, 80).until(
 
 emails_notificados = set()
 novas_mensagens = set()
-tamanho_minimo = 120_000
+tamanho_minimo = 120000
 wait = WebDriverWait(driver, 60)
 #===================================Filtro de Leilões e lógica principal===================================
 def verificar_emails():
@@ -142,8 +142,6 @@ def verificar_emails():
             
             if "AES" in assunto:
                 continue
-
-            
 
             if any(prefixo in assunto for prefixo in prefixos_para_remover):
                 continue
