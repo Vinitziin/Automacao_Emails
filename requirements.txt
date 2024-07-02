@@ -1,0 +1,6 @@
+selenium
+chromedriver-autoinstaller
+beautifulsoup4
+imgkit
+openai
+pywin32
