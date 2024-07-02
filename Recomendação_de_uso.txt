@@ -1,0 +1,6 @@
+Recomendações de uso da automação de leilão via WhatsApp:
+
+1. Abra o arquivo "Leitura_app" para iniciar a automação.
+2. Faça o login com sua conta do WhatsApp após a execução do arquivo.
+3. Evite realizar atividades no navegador de execução após tudo estar configurado.
+4. manter a aba da automação aberta.
