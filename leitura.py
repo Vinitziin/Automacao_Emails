@@ -157,7 +157,7 @@ def verificar_emails():
     try:
         config = carregar_configuracoes()
         logging.info('Configurações carregadas.')
-        assuntos_procurados = config['filtros']['assunto_procurados']
+        assuntos_procurados = config['filtros']['assuntos_procurados']
         prefixos_para_remover = config['filtros']['prefixos_para_remover']
 
         outlook = win32com.client.Dispatch("outlook.Application")
@@ -176,7 +176,10 @@ def verificar_emails():
                 if identificador_email in emails_notificados:
                     continue
 
-                if any(assunto.startswith(prefixo) for prefixo in prefixos_para_remover):
+                if any(prefixo.upper() in assunto for prefixo in prefixos_para_remover):
+                    continue
+
+                if "COTAÇÕES" in assunto or "COTACOES" in assunto:
                     continue
 
                 for assunto_procurado in assuntos_procurados:
@@ -205,8 +208,8 @@ def verificar_emails():
                 
                 if re.search(r'\bCHAMADA\b', assunto) and re.search(r'\bCCGNBE\b', assunto):
                     processar_attachments(email, assunto_original, identificador_email)
-                    continue
-                
+                    continue	
+
             except Exception as e:
                 logging.error(f"Erro ao processar o e-mail: {e}")
 
@@ -270,6 +273,7 @@ def enviar_imagem_whatsapp(img_path):
     try:
         anexo_botao = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'span[data-icon="attach-menu-plus"]')))
         driver.execute_script("arguments[0].scrollIntoView(true);", anexo_botao)
+        time.sleep(1)
         anexo_botao.click()
     except ElementClickInterceptedException:
         driver.execute_script("arguments[0].click();", anexo_botao)
@@ -280,6 +284,7 @@ def enviar_imagem_whatsapp(img_path):
     try:
         input_imagem = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[accept="image/*,video/mp4,video/3gpp,video/quicktime"]')))
         input_imagem.send_keys(img_path)
+        time.sleep(2)
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, '//span[@data-icon="send"]'))
         ).click()
@@ -304,6 +309,7 @@ def abrir_chat_contato(driver, contato):
         )
         barra_pesquisa.clear()
         barra_pesquisa.send_keys(contato)
+        time.sleep(2)
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, f'//span[@title="{contato}"]'))
         ).click()
@@ -327,6 +333,7 @@ def enviar_mensagem_whatsapp(driver, mensagem):
             EC.presence_of_element_located((By.XPATH, '//div[@contenteditable="true"][@data-tab="10"]'))
         )
         campo_mensagem.send_keys(mensagem)
+
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, '//button[@class="x1c4vz4f x2lah0s xdl72j9 xfect85 x1iy03kw x1lfpgzf"]'))
         ).click()
