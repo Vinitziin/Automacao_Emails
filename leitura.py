@@ -176,6 +176,10 @@ def verificar_emails():
                 if identificador_email in emails_notificados:
                     continue
 
+                if re.search(r'\bRFQ\b', assunto) and re.search(r'\bCOPEL\b', assunto):
+                    processar_email(email, assunto_original, identificador_email)
+                    continue
+
                 if any(prefixo.upper() in assunto for prefixo in prefixos_para_remover):
                     continue
 
@@ -193,10 +197,6 @@ def verificar_emails():
                             emails_notificados.add(identificador_email)
                             logging.info(f'E-mail processado: {assunto_original}')
                         break
-
-                if re.search(r'\bRFQ\b', assunto) and re.search(r'\bCOPEL\b', assunto):
-                    processar_email(email, assunto_original, identificador_email)
-                    continue
 
                 if re.search(r'\bCHAMADA\b', assunto) and re.search(r'\bBTG\b', assunto):
                     processar_email(email, assunto_original, identificador_email)
