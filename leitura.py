@@ -144,6 +144,8 @@ wait = WebDriverWait(driver, 60)
 #===================================Filtro de Leilões e lógica principal===================================
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', filename='script.log', filemode='a')
 
+ultima_verificacao = datetime.now()
+
 def verificar_emails():
     """
     Verifica os e-mails recebidos no Outlook e processa aqueles que correspondem aos filtros configurados.
@@ -164,7 +166,10 @@ def verificar_emails():
         inbox = outlook.GetNameSpace("MAPI").GetDefaultFolder(6)
 
         hoje = date.today().strftime("%d/%m/%Y %H:%M")
-        filtro = "[ReceivedTime] >= '" + hoje + "'"
+        # filtro = "[ReceivedTime] >= '" + hoje + "'"
+
+        filtro = f"[ReceivedTime] >= '{ultima_verificacao.strftime('%d/%m/%Y %H:%M')}'"
+
         emails_hoje = inbox.Items.Restrict(filtro)
 
         for email in emails_hoje:
