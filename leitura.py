@@ -190,7 +190,10 @@ def verificar_emails():
 
                 if "COTAÇÕES" in assunto or "COTACOES" in assunto:
                     continue
-
+                
+                if "AVISO DE LICITAÇÃO" in assunto:
+                    continue
+                
                 for assunto_procurado in assuntos_procurados:
                     if re.search(rf'\b{re.escape(assunto_procurado.upper())}\b', assunto):
                         tabela_html = extrair_tabela_html(email)
