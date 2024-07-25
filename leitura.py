@@ -166,9 +166,9 @@ def verificar_emails():
         inbox = outlook.GetNameSpace("MAPI").GetDefaultFolder(6)
 
         hoje = date.today().strftime("%d/%m/%Y %H:%M")
-        # filtro = "[ReceivedTime] >= '" + hoje + "'"
+        filtro = "[ReceivedTime] >= '" + hoje + "'"
 
-        filtro = f"[ReceivedTime] >= '{ultima_verificacao.strftime('%d/%m/%Y %H:%M')}'"
+        # filtro = f"[ReceivedTime] >= '{ultima_verificacao.strftime('%d/%m/%Y %H:%M')}'"
 
         emails_hoje = inbox.Items.Restrict(filtro)
 
@@ -279,7 +279,7 @@ def enviar_imagem_whatsapp(img_path):
         NoSuchElementException: Se não conseguir encontrar os elementos necessários para enviar a imagem.
     """
     try:
-        anexo_botao = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'span[data-icon="attach-menu-plus"]')))
+        anexo_botao = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'span[data-icon="plus"]')))
         driver.execute_script("arguments[0].scrollIntoView(true);", anexo_botao)
         time.sleep(1)
         anexo_botao.click()
